@@ -17,6 +17,48 @@ Status
 
 The library is considered feature-complete, though it doesn't yet have a good test suite.
 
+Examples
+--------
+
+Define values interactively...
+
+```
+$ ghci
+> import Data.Map
+> :load Text.JSON.Yocto
+> let boolean = Boolean True
+> let string  = String "Hapax Legomenon"
+> let array   = Array [Number 1, Number 2, Number 3]
+> let object  = Object $ fromList [("Foo", boolean), ("Bar", string), ("Qux", array)]
+```
+
+...and print them:
+
+```
+> boolean
+true
+> string
+"Hapax Legomenon"
+> array
+[1,2,3]
+> object
+{"Bar":"Hapax Legomenon","Foo":true,"Qux":[1,2,3]}
+```
+
+Here's a trivial program that parses JSON from standard input, adds 1 to every number, and prints the resulting JSON to standard output:
+
+```haskell
+module Main (main) where
+import Text.JSON.Yocto
+
+main = putStr . show . increment . read =<< getContents where
+  increment :: Value -> Value
+  increment (Number n) = Number $ n + 1
+  increment (Array  a) = Array  $ fmap plusOne a
+  increment (Object o) = Object $ fmap plusOne o
+  increment x          = x
+```
+
 Dependencies
 ------------
 
