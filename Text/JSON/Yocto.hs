@@ -70,18 +70,17 @@ input = (whitespace >> value) & getInput where
 instance Show Value where
   show  Null           = "null"
   show (Boolean b)     = if b then "true" else "false"
-  show (Number r)      = showRational r
-  show (String chars)  = "\"" ++ concat (showChar <$> chars) ++ "\""
+  show (String chars)  = "\"" ++ concat (escape <$> chars) ++ "\""
   show (Array values)  = "[" ++ intercalate "," (show <$> values) ++ "]"
   show (Object pairs)  = "{" ++ intercalate "," (showPair <$> pairs) ++ "}"
+  show (Number n) | rem == 0  = show int
+                  | otherwise = printf "%f" (fromRational n :: Double)
+    where (int, rem) = (numerator n) `divMod` (denominator n)
 
 showPair (name, value) = show name ++ ":" ++ show value
-showChar c = maybe control (\e -> "\\" ++ [e]) (c `lookup` exceptions)
+
+escape c = maybe control (\e -> "\\" ++ [e]) (c `lookup` exceptions)
   where control = if isControl c then (encode . showHex . fromEnum) c else [c]
         encode hex = "\\u" ++ replicate (4 - length s) '0' ++ s where s = hex ""
         exceptions = [('\b', 'b'), ('\f', 'f'), ('\n', 'n'), ('\r', 'r'),
                       ('\t', 't'), ('\\', '\\'), ('"', '"')]
-
-showRational r | remainder == 0 = show whole
-               | otherwise = printf "%f" (fromRational r :: Double)
-  where (whole, remainder) = (numerator r) `divMod` (denominator r)
