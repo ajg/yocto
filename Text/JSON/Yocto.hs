@@ -33,11 +33,11 @@ syntax = whitespace >> value where
   value = null <|> string <|> array <|> object <|> number <|> boolean
 
   null    = Null    <$ keyword "null"
-  string  = String  <<= many character       `enclosedBy` (char,  '"', '"')
-  array   = Array   <<= commaSeparated value `enclosedBy` (token, '[', ']')
-  object  = Object  <<= commaSeparated pair  `enclosedBy` (token, '{', '}')
-  number  = Number  <<= rational <<= lexical (integer & fraction & exponent)
-  boolean = Boolean <<= (keyword "true"  >>> True
+  string  = String  <$> many character       `enclosedBy` (char,  '"', '"')
+  array   = Array   <$> commaSeparated value `enclosedBy` (token, '[', ']')
+  object  = Object  <$> commaSeparated pair  `enclosedBy` (token, '{', '}')
+  number  = Number  <$> rational <$> lexical (integer & fraction & exponent)
+  boolean = Boolean <$> (keyword "true"  >>> True
                     <|> (keyword "false" >>> False))
 
   pair = name & (token ':' >> value) where name = string =>> \(String s) -> s
@@ -88,5 +88,4 @@ showRational r | remainder == 0 = show whole
   where (whole, remainder) = (numerator r) `divMod` (denominator r)
 
 -- Give more intuitive names to the Functor combinators:
-a <<= b = a <$> b; a & b = (,) <<= a <*> b
-a =>> b = b <$> a; a >>> b = b <$ a
+a & b = (,) <$> a <*> b; a =>> b = b <$> a; a >>> b = b <$ a
