@@ -35,9 +35,9 @@ syntax = whitespace >> value where
   null    = Null    <$  keyword "null"
   boolean = Boolean <$> (True <$ keyword "true" <|> False <$ keyword "false")
   number  = Number  <$> rational <$> lexical (integer & fraction & exponent)
-  string  = String  <$> many character       `enclosedBy` (char,  '"', '"')
-  array   = Array   <$> commaSeparated value `enclosedBy` (token, '[', ']')
-  object  = Object  <$> commaSeparated pair  `enclosedBy` (token, '{', '}')
+  string  = String  <$> many character `enclosedBy` (char,  '"', '"')
+  array   = Array   <$> commaSep value `enclosedBy` (token, '[', ']')
+  object  = Object  <$> commaSep pair  `enclosedBy` (token, '{', '}')
 
   pair = name & (token ':' >> value) where name = (\(String s) -> s) <$> string
   character = satisfy (\c -> not (isControl c) && c /= '"' && c /= '\\')
@@ -48,7 +48,7 @@ syntax = whitespace >> value where
   fraction = option 0 (char '.' >> fmap fractional (many1 digit))
   exponent = option 0 (oneOf "eE" >> natural `maybeSignedWith` (plus <|> minus))
 
-  commaSeparated = (`sepBy` token ',')
+  commaSep = (`sepBy` token ',')
   items `enclosedBy` (term, start, end) = term start *> items <* term end
   it `maybeSignedWith` sign = ($ 0) <$> option (+) sign <*> it
   (plus, minus) = ((+) <$ char '+', (-) <$ char '-')
