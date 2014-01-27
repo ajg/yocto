@@ -93,6 +93,8 @@ Future Work
  - Ensure the library works with compilers besides GHC.
  - A test suite.
 
+(Feel free to send a pull request for any of these.)
+
 License
 -------
 
