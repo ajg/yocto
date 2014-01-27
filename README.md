@@ -1,4 +1,4 @@
-yocto
+Yocto
 =====
 
-A Minimal JSON Parser &amp; Printer for Haskell
+A Minimal JSON Parser & Printer for Haskell
