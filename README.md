@@ -15,7 +15,7 @@ The name is a play on [metric unit prefixes](http://en.wikipedia.org/wiki/Metric
 Status
 ------
 
-The library is considered feature-complete, though it doesn't yet have a good test suite.
+The library is considered feature-complete, though there's some [work to do](#future-work).
 
 Examples
 --------
@@ -67,8 +67,9 @@ The only requirements are the `parsec` and `containers` packages.
 Future Work
 -----------
 
+ - Format `Number`s without going through a `Double`, which is lossy.
  - An instance of `Functor`, `Applicative` or `Monad` to facilitate mapping.
- - Ensuring the library works with compilers besides GHC.
+ - Ensure the library works with compilers besides GHC.
  - A test suite.
 
 License
