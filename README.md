@@ -22,6 +22,13 @@ Dependencies
 
 The only requirements are the `parsec` and `containers` packages.
 
+Future Work
+-----------
+
+ - An instance of `Functor`, `Applicative` or `Monad` to facilitate mapping.
+ - Ensuring the library works with compilers besides GHC.
+ - A test suite.
+
 License
 -------
 
