@@ -46,12 +46,12 @@ syntax = whitespace >> value where
                             / oneOf "\"\\/bfnrt")
 
   integer  = (char '0' >>> 0 / natural) `maybeSignedWith` minus =>> (% 1)
-  fraction = (char '.' >> many1 digit =>> fractional) `or` 0
-  exponent = (oneOf "eE" >> natural `maybeSignedWith` (plus / minus)) `or` 0
+  fraction = option 0 (char '.' >> many1 digit =>> fractional)
+  exponent = option 0 (oneOf "eE" >> natural `maybeSignedWith` (plus / minus))
 
   commaSeparated = (`sepBy` token ',')
   items `enclosedBy` (term, start, end) = term start *> items <* term end
-  it `maybeSignedWith` sign = (sign `or` (+) =>> ($ 0)) <*> it
+  it `maybeSignedWith` sign = ((option (+) sign) =>> ($ 0)) <*> it
   (plus, minus) = (char '+' >>> (+),
                    char '-' >>> (-))
 
@@ -90,4 +90,4 @@ showRational r | remainder == 0 = show whole
 
 -- Give more intuitive names to the Functor combinators:
 a <<= b = a <$> b; a <<< b = a <$ b; a & b = (,) <<= a <*> b
-a =>> b = b <$> a; a >>> b = b <$ a; a / b = a <|> b; or = flip option
+a =>> b = b <$> a; a >>> b = b <$ a; a / b = a <|> b
