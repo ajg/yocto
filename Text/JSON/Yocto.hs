@@ -50,7 +50,7 @@ syntax = whitespace >> value where
 
   commaSep = (`sepBy` token ',')
   items `enclosedBy` (term, start, end) = term start *> items <* term end
-  it `maybeSignedWith` sign = ($ 0) <$> option (+) sign <*> it
+  n `maybeSignedWith` sign = ($ 0) <$> option (+) sign <*> n
   (plus, minus) = ((+) <$ char '+', (-) <$ char '-')
 
   lexical  = (<* whitespace)
