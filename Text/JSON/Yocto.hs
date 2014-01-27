@@ -32,7 +32,7 @@ syntax = whitespace >> value where
   whitespace = many (oneOf " \t\r\n")
   value = null <|> string <|> array <|> object <|> number <|> boolean
 
-  null    = Null    <<< keyword "null"
+  null    = Null    <$ keyword "null"
   string  = String  <<= many character       `enclosedBy` (char,  '"', '"')
   array   = Array   <<= commaSeparated value `enclosedBy` (token, '[', ']')
   object  = Object  <<= commaSeparated pair  `enclosedBy` (token, '{', '}')
@@ -88,5 +88,5 @@ showRational r | remainder == 0 = show whole
   where (whole, remainder) = (numerator r) `divMod` (denominator r)
 
 -- Give more intuitive names to the Functor combinators:
-a <<= b = a <$> b; a <<< b = a <$ b; a & b = (,) <<= a <*> b
+a <<= b = a <$> b; a & b = (,) <<= a <*> b
 a =>> b = b <$> a; a >>> b = b <$ a
