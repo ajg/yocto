@@ -4,7 +4,8 @@ ghc:
   - 7.4
   - 7.6
 
-after_install:
+install:
+  - cabal install --only-dependencies --enable-tests
   - cabal install hlint
   - export PATH=$HOME/.cabal/bin:$PATH
 
