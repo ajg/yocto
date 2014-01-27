@@ -47,7 +47,7 @@ input = (whitespace >> value) & getInput where
   number  = Number  <$> rational <$> lexical (integer & fraction & exponent)
   string  = String  <$> many character `within` (char,  '"', '"')
   array   = Array   <$> commaSep value `within` (token, '[', ']')
-  object  = Object  <$> fromList <$> commaSep pair  `within` (token, '{', '}')
+  object  = Object  <$> fromList <$> commaSep pair `within` (token, '{', '}')
 
   pair = name & (token ':' >> value) where name = (\(String s) -> s) <$> string
   character = satisfy (not . \c -> isControl c || elem c "\"\\") <|> escape
