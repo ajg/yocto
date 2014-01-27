@@ -17,6 +17,25 @@ Status
 
 The library is considered feature-complete, though there's some [work to do](#future-work).
 
+Usage
+-----
+
+The `Value` type is defined as follows:
+
+```haskell
+data Value = Null
+           | Boolean Bool
+           | Number  Rational
+           | String  [Char]
+           | Array   [Value]
+           | Object  (Map String Value)
+  deriving (Eq, Ord)
+```
+
+...and can be `read` and `show`n as JSON, or constructed programmatically.
+
+Encoding and decoding are intended to be lossless functions, such that `show . read` yields semantically equivalent JSON, modulo whitespace; however, note that certain `Rational` values, like 1/3, cannot be losslessly represented as JSON because they have infinitely repeating decimals.
+
 Examples
 --------
 
