@@ -8,7 +8,7 @@ import Data.Map (fromList, Map, toList)
 import Data.Ratio ((%), denominator, numerator)
 import Prelude hiding (exp, exponent, null)
 import Numeric (readDec, readHex, showHex)
-import qualified Text.Parsec as Parse
+import qualified Text.Parsec as Parsec
 import Text.Parsec hiding (string, token)
 import Text.Printf (printf)
 
@@ -62,8 +62,8 @@ input = (whitespace >> value) & getInput where
   exponent = option 0 (oneOf "eE" >> natural `maybeSignedWith` (plus <|> minus))
 
   a & b      = (,) <$> a <*> b
-  token      = lexical . Parse.char
-  keyword    = lexical . Parse.string
+  token      = lexical . Parsec.char
+  keyword    = lexical . Parsec.string
   commaSep   = (`sepBy` token ',')
   whitespace = many (oneOf " \t\r\n")
 
