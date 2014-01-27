@@ -8,8 +8,8 @@ import Data.Map (fromList, Map, toList)
 import Data.Ratio ((%), denominator, numerator)
 import Prelude hiding (exp, exponent, null)
 import Numeric (fromRat, readDec, readHex, showHex)
-import qualified Text.Parsec as Parsec
 import Text.Parsec hiding (string, token)
+import qualified Text.Parsec as Parsec
 
 data Value = Null
            | Boolean Bool
