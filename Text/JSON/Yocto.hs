@@ -1,5 +1,4 @@
 -- Copyright 2014 Alvaro J. Genial [http://alva.ro]; see LICENSE file for more.
-
 module Text.JSON.Yocto (Value (..)) where
 
 import Control.Applicative hiding ((<|>), many)
@@ -19,8 +18,6 @@ data Value = Null
            | Array  [Value]
            | Object [(String, Value)]
   deriving (Eq, Ord)
-
---- Reading --------------------------------------------------------------------
 
 instance Read Value where
   readsPrec _ string = attempt $ parse input "JSON" string
@@ -65,17 +62,15 @@ input = (whitespace >> value) & getInput where
   token = lexical . Parse.char
   keyword = lexical . Parse.string
 
---- Showing --------------------------------------------------------------------
-
 instance Show Value where
-  show  Null           = "null"
-  show (Boolean b)     = if b then "true" else "false"
-  show (String chars)  = "\"" ++ concat (escape <$> chars) ++ "\""
-  show (Array values)  = "[" ++ intercalate "," (show <$> values) ++ "]"
-  show (Object pairs)  = "{" ++ intercalate "," (showPair <$> pairs) ++ "}"
-  show (Number n) | rem == 0  = show int
-                  | otherwise = printf "%f" (fromRational n :: Double)
-    where (int, rem) = (numerator n) `divMod` (denominator n)
+  show  Null       = "null"
+  show (Boolean b) = if b then "true" else "false"
+  show (String  s) = "\"" ++ concat (escape <$> s) ++ "\""
+  show (Array   a) = "[" ++ intercalate "," (show <$> a) ++ "]"
+  show (Object  o) = "{" ++ intercalate "," (showPair <$> o) ++ "}"
+  show (Number  n) | rem == 0  = show i
+                   | otherwise = printf "%f" (fromRational n :: Double)
+    where (i, rem) = (numerator n) `divMod` (denominator n)
 
 showPair (name, value) = show name ++ ":" ++ show value
 
