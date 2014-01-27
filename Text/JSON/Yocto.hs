@@ -7,10 +7,9 @@ import Data.List (intercalate)
 import Data.Map (fromList, Map, toList)
 import Data.Ratio ((%), denominator, numerator)
 import Prelude hiding (exp, exponent, null)
-import Numeric (readDec, readHex, showHex)
+import Numeric (fromRat, readDec, readHex, showHex)
 import qualified Text.Parsec as Parsec
 import Text.Parsec hiding (string, token)
-import Text.Printf (printf)
 
 data Value = Null
            | Boolean Bool
@@ -23,9 +22,7 @@ data Value = Null
 instance Show Value where
   show  Null       = "null"
   show (Boolean b) = if b then "true" else "false"
-  show (Number  n) | rem == 0  = show i
-                   | otherwise = printf "%f" (fromRational n :: Double)
-    where (i, rem) = (numerator n) `divMod` (denominator n)
+  show (Number  n) = show $ fromRat n
   show (String  s) = "\"" ++ concat (escape <$> s) ++ "\""
   show (Array   a) = "[" ++ intercalate "," (show <$> a) ++ "]"
   show (Object  o) = "{" ++ intercalate "," (f <$> toList o) ++ "}"

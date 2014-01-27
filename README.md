@@ -88,7 +88,6 @@ The only requirements are the `parsec` and `containers` packages.
 Future Work
 -----------
 
- - Format `Number`s without going through a `Double`, which is lossy.
  - An instance of `Functor`, `Applicative` or `Monad` to facilitate mapping.
  - Ensure the library works with compilers besides GHC.
  - A test suite.
