@@ -54,8 +54,8 @@ import Text.JSON.Yocto
 main = putStr . show . increment . read =<< getContents where
   increment :: Value -> Value
   increment (Number n) = Number $ n + 1
-  increment (Array  a) = Array  $ fmap plusOne a
-  increment (Object o) = Object $ fmap plusOne o
+  increment (Array  a) = Array  $ fmap increment a
+  increment (Object o) = Object $ fmap increment o
   increment x          = x
 ```
 
