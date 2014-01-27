@@ -22,7 +22,8 @@ data Value = Null
 instance Show Value where
   show  Null       = "null"
   show (Boolean b) = if b then "true" else "false"
-  show (Number  n) = show $ fromRat n
+  show (Number  n) = if rem == 0 then show i else show $ fromRat n
+    where (i, rem) = (numerator n) `divMod` (denominator n)
   show (String  s) = "\"" ++ concat (escape <$> s) ++ "\""
   show (Array   a) = "[" ++ intercalate "," (show <$> a) ++ "]"
   show (Object  o) = "{" ++ intercalate "," (f <$> toList o) ++ "}"
