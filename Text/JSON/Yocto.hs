@@ -14,7 +14,7 @@ import qualified Text.Parsec as Parsec
 data Value = Null
            | Boolean Bool
            | Number  Rational
-           | String  [Char]
+           | String  String
            | Array   [Value]
            | Object  (Map String Value)
   deriving (Eq, Ord)
@@ -28,7 +28,7 @@ instance Show Value where
   show (Object  o) = "{" ++ intercalate "," (f <$> toList o) ++ "}"
     where f (n, v) = show n ++ ":" ++ show v
 
-escape c = maybe control (\e -> "\\" ++ [e]) (c `lookup` exceptions) where
+escape c = maybe control (\e -> '\\' : [e]) (c `lookup` exceptions) where
   control = if isControl c then (encode . showHex . fromEnum) c else [c]
   encode hex = "\\u" ++ replicate (4 - length s) '0' ++ s where s = hex ""
   exceptions = [('\b', 'b'), ('\f', 'f'), ('\n', 'n'), ('\r', 'r'),

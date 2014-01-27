@@ -28,7 +28,7 @@ The `Value` type is defined as follows:
 data Value = Null
            | Boolean Bool
            | Number  Rational
-           | String  [Char]
+           | String  String
            | Array   [Value]
            | Object  (Map String Value)
   deriving (Eq, Ord)
