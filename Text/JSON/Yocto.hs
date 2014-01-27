@@ -39,25 +39,25 @@ syntax = whitespace >> value where
   array   = Array   <$> commaSeparated value `enclosedBy` (token, '[', ']')
   object  = Object  <$> commaSeparated pair  `enclosedBy` (token, '{', '}')
 
-  pair = name & (token ':' >> value) where name = string =>> \(String s) -> s
+  pair = name & (token ':' >> value) where name = (\(String s) -> s) <$> string
   character = satisfy (\c -> not (isControl c) && c /= '"' && c /= '\\')
-          <|> (char '\\' >> ((char 'u' >> count 4 hexDigit =>> ordinal)
+          <|> (char '\\' >> ((char 'u' >> ordinal <$> count 4 hexDigit)
                         <|> oneOf "\"\\/bfnrt"))
 
-  integer  = (0 <$ char '0' <|> natural) `maybeSignedWith` minus =>> (% 1)
-  fraction = option 0 (char '.' >> many1 digit =>> fractional)
+  integer  = fromInteger <$> (0 <$ char '0' <|> natural) `maybeSignedWith` minus
+  fraction = option 0 (char '.' >> fmap fractional (many1 digit))
   exponent = option 0 (oneOf "eE" >> natural `maybeSignedWith` (plus <|> minus))
 
   commaSeparated = (`sepBy` token ',')
   items `enclosedBy` (term, start, end) = term start *> items <* term end
-  it `maybeSignedWith` sign = (option (+) sign =>> ($ 0)) <*> it
+  it `maybeSignedWith` sign = ($ 0) <$> option (+) sign <*> it
   (plus, minus) = ((+) <$ char '+', (-) <$ char '-')
 
   lexical  = (<* whitespace)
   integral = fst . head . readDec
   ordinal  = toEnum . fst . head . readHex
 
-  natural = many1 digit =>> integral
+  natural = integral <$> many1 digit
   fractional digits = integral digits % (10 ^ length digits)
   rational ((int, frac), exp) = (int + (signum int * frac)) * 10 ^^ exp
 
@@ -86,4 +86,4 @@ showRational r | remainder == 0 = show whole
   where (whole, remainder) = (numerator r) `divMod` (denominator r)
 
 -- Give more intuitive names to the Functor combinators:
-a & b = (,) <$> a <*> b; a =>> b = b <$> a
+a & b = (,) <$> a <*> b
