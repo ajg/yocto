@@ -40,7 +40,7 @@ instance Read Value where
           attempt (Right success) = [success]
 
 input = (whitespace >> value) & getInput where
-  value = null <|> string <|> array <|> object <|> number <|> boolean
+  value = null <|> boolean <|> number <|> string <|> array <|> object
 
   null    = Null    <$  keyword "null"
   boolean = Boolean <$> (True <$ keyword "true" <|> False <$ keyword "false")
