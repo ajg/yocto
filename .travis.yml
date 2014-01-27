@@ -4,11 +4,8 @@ ghc:
   - 7.4
   - 7.6
 
-install:
+after_install:
   - cabal install hlint
 
-script:
-  - cabal configure --enable-tests
-  - cabal build
-  - cabal test
+before_script:
   - hlint .
