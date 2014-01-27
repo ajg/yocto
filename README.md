@@ -10,6 +10,8 @@ Synopsis
 
 Yocto is exceedingly simple: it only exports one type, `Value` (which can represent any JSON-encoded data) in addition to `Read` and `Show` instances for it (which, respectively, take care of decoding and encoding values automatically.)
 
+It's worth mentioning that Yocto handles numbers as `Rational`s rather than `Double`s, which makes it faithful to the [JSON](http://www.json.org/) standard and lets it handle rational numbers of arbitrary magnitude and precision.
+
 The name is a play on [metric unit prefixes](http://en.wikipedia.org/wiki/Metric_prefix): `AttoJson` is a tiny JSON library, and `Yocto` is even smaller. (The [entire implementation](./Text/JSON/Yocto.hs) fits in fewer than 80 rows x 80 columns.)
 
 Status
