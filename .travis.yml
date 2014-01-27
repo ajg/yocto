@@ -6,6 +6,7 @@ ghc:
 
 after_install:
   - cabal install hlint
+  - export PATH=$HOME/.cabal/bin:$PATH
 
 before_script:
   - hlint .
