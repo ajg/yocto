@@ -1,0 +1,18 @@
+Name:                  Yocto
+Version:               0.1.0
+Author:                Alvaro J. Genial
+Homepage:              https://github.com/ajg/yocto
+Synopsis:              A Minimal JSON Parser & Printer for Haskell
+License:               MIT
+License-File:          LICENSE
+Category:              Text
+Build-type:            Simple
+Cabal-version:         >= 1.2
+
+Library
+  Exposed-modules:     Text.JSON.Yocto
+  Build-depends:       base, containers, parsec
+
+source-repository head
+  type:                git
+  location:            https://github.com/ajg/yocto/tree/master
