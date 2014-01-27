@@ -6,7 +6,7 @@ import Control.Applicative hiding ((<|>), many)
 import Data.Char (isControl)
 import Data.List (intercalate)
 import Data.Ratio ((%), denominator, numerator)
-import Prelude hiding ((/), exp, exponent, or, null, showChar)
+import Prelude hiding (exp, exponent, or, null, showChar)
 import Numeric (readDec, readHex, showHex)
 import qualified Text.Parsec as Parse
 import Text.Parsec hiding (string, token)
@@ -30,7 +30,7 @@ instance Read Value where
 syntax = whitespace >> value where
 
   whitespace = many (oneOf " \t\r\n")
-  value = null / string / array / object / number / boolean
+  value = null <|> string <|> array <|> object <|> number <|> boolean
 
   null    = Null    <<< keyword "null"
   string  = String  <<= many character       `enclosedBy` (char,  '"', '"')
@@ -38,22 +38,21 @@ syntax = whitespace >> value where
   object  = Object  <<= commaSeparated pair  `enclosedBy` (token, '{', '}')
   number  = Number  <<= rational <<= lexical (integer & fraction & exponent)
   boolean = Boolean <<= (keyword "true"  >>> True
-                      / (keyword "false" >>> False))
+                    <|> (keyword "false" >>> False))
 
   pair = name & (token ':' >> value) where name = string =>> \(String s) -> s
   character = satisfy (\c -> not (isControl c) && c /= '"' && c /= '\\')
-            / (char '\\' >> ( char 'u' >> count 4 hexDigit =>> ordinal)
-                            / oneOf "\"\\/bfnrt")
+          <|> (char '\\' >> ((char 'u' >> count 4 hexDigit =>> ordinal)
+                        <|> oneOf "\"\\/bfnrt"))
 
-  integer  = (char '0' >>> 0 / natural) `maybeSignedWith` minus =>> (% 1)
+  integer  = (char '0' >>> 0 <|> natural) `maybeSignedWith` minus =>> (% 1)
   fraction = option 0 (char '.' >> many1 digit =>> fractional)
-  exponent = option 0 (oneOf "eE" >> natural `maybeSignedWith` (plus / minus))
+  exponent = option 0 (oneOf "eE" >> natural `maybeSignedWith` (plus <|> minus))
 
   commaSeparated = (`sepBy` token ',')
   items `enclosedBy` (term, start, end) = term start *> items <* term end
-  it `maybeSignedWith` sign = ((option (+) sign) =>> ($ 0)) <*> it
-  (plus, minus) = (char '+' >>> (+),
-                   char '-' >>> (-))
+  it `maybeSignedWith` sign = (option (+) sign =>> ($ 0)) <*> it
+  (plus, minus) = (char '+' >>> (+), char '-' >>> (-))
 
   lexical  = (<* whitespace)
   integral = fst . head . readDec
@@ -90,4 +89,4 @@ showRational r | remainder == 0 = show whole
 
 -- Give more intuitive names to the Functor combinators:
 a <<= b = a <$> b; a <<< b = a <$ b; a & b = (,) <<= a <*> b
-a =>> b = b <$> a; a >>> b = b <$ a; a / b = a <|> b
+a =>> b = b <$> a; a >>> b = b <$ a
