@@ -83,7 +83,7 @@ main = putStr . show . increment . read =<< getContents where
 Dependencies
 ------------
 
-The only requirements are the `parsec` and `containers` packages.
+The only requirements are the `base`, `containers`, and `parsec` packages.
 
 Future Work
 -----------
