@@ -15,6 +15,16 @@ It's worth mentioning that Yocto handles numbers as `Rational`s rather than `Dou
 
 The name is a play on [metric unit prefixes](http://en.wikipedia.org/wiki/Metric_prefix): `AttoJson` is a tiny JSON library, and `Yocto` is even smaller. (The [entire implementation](./Text/JSON/Yocto.hs) fits in fewer than 80 rows x 80 columns.)
 
+Motivation
+----------
+
+Yocto is not intended to be the most efficient or feature-rich JSON library; rather, it was written to...
+
+ - Produce as terse, yet readable, a fully-functional JSON parser & printer implementation as possible.
+ - Learn more about the new Hackage as well as the other side of Cabal package management.
+ - Make playing with JSON interactively quick, convenient and fun.
+ - Experiment with minimalist design.
+
 Status
 ------
 
