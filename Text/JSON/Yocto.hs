@@ -23,11 +23,11 @@ data Value = Null
 --- Reading --------------------------------------------------------------------
 
 instance Read Value where
-  readsPrec _ string = attempt (parse (syntax & getInput) "JSON" string)
-    where attempt (Left failure) = error ("invalid " ++ show failure)
+  readsPrec _ string = attempt $ parse input "JSON" string
+    where attempt (Left failure) = error $ "invalid " ++ show failure
           attempt (Right success) = [success]
 
-syntax = whitespace >> value where
+input = (whitespace >> value) & getInput where
 
   whitespace = many (oneOf " \t\r\n")
   value = null <|> string <|> array <|> object <|> number <|> boolean
@@ -61,6 +61,7 @@ syntax = whitespace >> value where
   fractional digits = integral digits % (10 ^ length digits)
   rational ((int, frac), exp) = (int + (signum int * frac)) * 10 ^^ exp
 
+  a & b = (,) <$> a <*> b
   token = lexical . Parse.char
   keyword = lexical . Parse.string
 
@@ -84,6 +85,3 @@ showChar c = maybe control (\e -> "\\" ++ [e]) (c `lookup` exceptions)
 showRational r | remainder == 0 = show whole
                | otherwise = printf "%f" (fromRational r :: Double)
   where (whole, remainder) = (numerator r) `divMod` (denominator r)
-
--- Give more intuitive names to the Functor combinators:
-a & b = (,) <$> a <*> b
