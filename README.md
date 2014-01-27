@@ -12,6 +12,11 @@ Yocto is exceedingly simple: it only exports one type, `Value` (which can repres
 
 The name is a play on [metric unit prefixes](http://en.wikipedia.org/wiki/Metric_prefix): `AttoJson` is a tiny JSON library, and `Yocto` is even smaller. (The entire implementation fits in fewer than 80 rows x 80 columns.)
 
+Status
+------
+
+The library is considered feature-complete, though it doesn't yet have a good test suite.
+
 Dependencies
 ------------
 
