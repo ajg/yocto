@@ -17,7 +17,7 @@ The name is a play on [metric unit prefixes](http://en.wikipedia.org/wiki/Metric
 Status
 ------
 
-The library is considered feature-complete, though there's some [work to do](#future-work).
+The library is considered feature-complete, though there's some [work to do](#future-work). The current version is `0.1.1`.
 
 Usage
 -----
