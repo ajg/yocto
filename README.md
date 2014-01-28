@@ -28,7 +28,7 @@ Yocto is not intended to be the most efficient or feature-rich JSON library; rat
 Status
 ------
 
-The library is feature complete for the most part, though there's some [work to do](#future-work). The current version is `0.1.2`.
+The library is feature complete, though there's some [work to do](#future-work). The current version is `0.1.2`.
 
 Usage
 -----
@@ -101,6 +101,7 @@ Future Work
 
  - An instance of `Functor`, `Applicative` or `Monad` to facilitate mapping.
  - Ensure the library works with compilers besides GHC.
+ - Independent `encode` and `decode` functions (maybe.)
  - A test suite.
 
 (Feel free to send a pull request for any of these.)
