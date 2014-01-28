@@ -13,7 +13,7 @@ Yocto is exceedingly simple: it only exports one type, `Value` (which can repres
 
 It's worth mentioning that Yocto handles numbers as `Rational`s rather than `Double`s, which makes it faithful to the [JSON](http://www.json.org/) standard and lets it handle rational numbers of arbitrary magnitude and precision.
 
-The name is a play on [metric unit prefixes](http://en.wikipedia.org/wiki/Metric_prefix): `AttoJson` is a tiny JSON library, and `Yocto` is even smaller. (The [entire implementation](./Text/JSON/Yocto.hs) fits in fewer than 80 rows x 80 columns.)
+The name is a play on [metric unit prefixes](http://en.wikipedia.org/wiki/Metric_prefix): `AttoJson` is a tiny JSON library, and `Yocto` is even smaller. (The [entire implementation](./Text/JSON/Yocto.hs) fits in fewer than 80 lines x 80 columns.)
 
 Motivation
 ----------
@@ -54,7 +54,7 @@ Examples
 
 Define values interactively...
 
-```
+```haskell
 $ ghci
 > import Data.Map
 > :load Text.JSON.Yocto
@@ -66,7 +66,7 @@ $ ghci
 
 ...and print them:
 
-```
+```haskell
 > boolean
 true
 > string
