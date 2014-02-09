@@ -28,7 +28,7 @@ Yocto is not intended to be the most efficient or feature-rich JSON library; rat
 Status
 ------
 
-The library is feature complete, though there's some [work to do](#future-work).
+The library is feature complete; it is documented using `haddock` and tested using `QuickCheck`.
 
 Usage
 -----
@@ -94,15 +94,7 @@ main = putStr . encode . increment . decode =<< getContents where
 Dependencies
 ------------
 
-The only requirements are the `base`, `containers`, and `parsec` packages.
-
-Future Work
------------
-
- - An instance of `Functor`, `Applicative` or `Monad` to facilitate mapping.
- - A test suite.
-
-(Feel free to send a pull request for any of these.)
+The only requirements are the `base`, `containers`, and `parsec` packages; testing requires additional packages (see [yocto.cabal](./yocto.cabal) for details.)
 
 License
 -------
