@@ -2,7 +2,7 @@
 1.0.0
 =====
 
- - Removed `Read` & `Show` instances in favor of `decode` & `decode`.
+ - Removed `Read` & `Show` instances in favor of `decode` & `encode`.
  - Added `QuickCheck`-based test suite.
  - Fixed decoding of numbers between -1 and 1.
  - Added error check for trailing (unparsed) input.
