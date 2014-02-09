@@ -4,6 +4,8 @@
 
  - Removed `Read` & `Show` instances in favor of `decode` & `decode`.
  - Added `QuickCheck`-based test runner.
+ - Fixed decoding of numbers between -1 and 1.
+ - Added error check for trailing (unparsed) input.
 
 0.1.2
 =====
