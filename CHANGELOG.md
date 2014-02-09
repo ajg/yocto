@@ -1,4 +1,10 @@
 
+1.0.1
+=====
+
+ - Updated file header notices.
+ - Renamed LICENSE to LICENSE.md.
+
 1.0.0
 =====
 

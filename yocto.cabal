@@ -6,7 +6,7 @@ Homepage:              https://github.com/ajg/yocto
 Synopsis:              A Minimal JSON Parser & Printer for Haskell
 Description:           Hassle-free, fast, lossless encoding & decoding of JSON.
 License:               MIT
-License-File:          LICENSE
+License-File:          LICENSE.md
 Category:              Text
 Build-type:            Simple
 Cabal-version:         >= 1.8

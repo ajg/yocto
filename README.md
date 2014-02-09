@@ -99,7 +99,7 @@ The only requirements are the `base`, `containers`, and `parsec` packages; testi
 License
 -------
 
-This library is distributed under the MIT [LICENSE](./LICENSE).
+This library is distributed under the MIT [LICENSE](./LICENSE.md).
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/ajg/yocto/trend.png)](https://bitdeli.com/free "Bitdeli Badge")

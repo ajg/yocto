@@ -1,4 +1,5 @@
--- Copyright 2014 Alvaro J. Genial [http://alva.ro]; see LICENSE file for more.
+-- Copyright 2014 Alvaro J. Genial (http://alva.ro) -- see LICENSE.md for more.
+
 -- | A Minimal JSON Parser & Printer
 module Text.JSON.Yocto (decode, encode, Value (..)) where
 
