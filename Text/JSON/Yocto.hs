@@ -1,5 +1,5 @@
 -- Copyright 2014 Alvaro J. Genial [http://alva.ro]; see LICENSE file for more.
-
+-- | A Minimal JSON Parser & Printer
 module Text.JSON.Yocto (decode, encode, Value (..)) where
 
 import Control.Applicative hiding ((<|>), many)
@@ -12,14 +12,15 @@ import Numeric (fromRat, readDec, readHex, showHex)
 import Text.Parsec hiding (string, token)
 import qualified Text.Parsec as Parsec
 
+-- | Represents arbitrary JSON data.
 data Value = Null
            | Boolean Bool
            | Number  Rational
            | String  String
            | Array   [Value]
-           | Object  (Map String Value)
-  deriving (Eq, Ord, Read, Show)
+           | Object  (Map String Value) deriving (Eq, Ord, Read, Show)
 
+-- | Encodes a 'Value' to a 'String'.
 encode :: Value -> String
 encode  Null       = "null"
 encode (Boolean b) = if b then "true" else "false"
@@ -36,10 +37,12 @@ escape c = maybe control (\e -> '\\' : [e]) (c `lookup` exceptions) where
   exceptions = [('\b', 'b'), ('\f', 'f'), ('\n', 'n'), ('\r', 'r'),
                 ('\t', 't'), ('\\', '\\'), ('"', '"')]
 
+-- | Decodes a 'Value' from a 'String'.
 decode :: String -> Value
 decode = attempt . parse input "JSON"
-    where attempt (Left failure) = error $ "invalid " ++ show failure
-          attempt (Right success) = fst success
+    where attempt (Right (success, "")) = success
+          attempt (Right (_, trail)) = error $ "trailing " ++ show trail
+          attempt (Left failure) = error $ "invalid " ++ show failure
 
 input = (whitespace >> value) & getInput where
   value = null <|> boolean <|> number <|> string <|> array <|> object
@@ -52,27 +55,26 @@ input = (whitespace >> value) & getInput where
   object  = Object  <$> fromList <$> commaSep pair `within` (token, '{', '}')
 
   pair = name & (token ':' >> value) where name = (\(String s) -> s) <$> string
-  character = satisfy (not . \c -> isControl c || elem c "\"\\") <|> escape
+  character = escape <|> satisfy (not . \c -> isControl c || elem c "\"\\")
     where escape  = char '\\' >> (oneOf "\"\\/bfnrt" <|> unicode)
           unicode = char 'u' >> ordinal <$> count 4 hexDigit
 
-  integer  = fromInteger <$> (0 <$ char '0' <|> natural) `maybeSignedWith` minus
-  fraction = option 0 (char '.' >> fmap fractional (many1 digit))
+  integer  = option '+' (char '-') & (0 <$ char '0' <|> natural)
+  fraction = option 0 (char '.' >> fractional <$> many1 digit)
   exponent = option 0 (oneOf "eE" >> natural `maybeSignedWith` (plus <|> minus))
-
-  a & b      = (,) <$> a <*> b
-  token      = lexical . Parsec.char
-  keyword    = lexical . Parsec.string
-  commaSep   = (`sepBy` token ',')
-  whitespace = many (oneOf " \t\r\n")
+    where (plus, minus) = ((+) <$ char '+', (-) <$ char '-')
 
   items `within` (term, start, end) = term start *> items <* term end
   number `maybeSignedWith` sign = ($ 0) <$> option (+) sign <*> number
-  (plus, minus) = ((+) <$ char '+', (-) <$ char '-')
+  (token, keyword) = (lexical . Parsec.char, lexical . Parsec.string)
 
-  lexical  = (<* whitespace)
-  integral = fst . head . readDec
-  ordinal  = toEnum . fst . head . readHex
-  natural  = integral <$> many1 digit
+  a & b      = (,) <$> a <*> b
+  commaSep   = (`sepBy` token ',')
+  whitespace = many (oneOf " \t\r\n")
+  lexical    = (<* whitespace)
+  integral   = fst . head . readDec
+  ordinal    = toEnum . fst . head . readHex
+  natural    = integral <$> many1 digit
   fractional digits = integral digits % (10 ^ length digits)
-  rational ((int, frac), exp) = (int + (signum int * frac)) * 10 ^^ exp
+  rational ((('+', int), frac), exp) = (fromInteger int + frac) * 10 ^^ exp
+  rational ((('-', int), frac), exp) = -(fromInteger int + frac) * 10 ^^ exp
