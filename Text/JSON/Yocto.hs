@@ -4,13 +4,13 @@ module Text.JSON.Yocto (decode, encode, Value (..)) where
 
 import Control.Applicative hiding ((<|>), many)
 import Data.Char (isControl)
-import Data.List (intercalate)
+import Data.List (find, intercalate)
 import Data.Map (fromList, Map, toList)
+import Data.Maybe (fromJust)
 import Data.Ratio ((%), denominator, numerator)
 import Prelude hiding (exp, exponent, null)
 import Numeric (fromRat, readDec, readHex, showHex)
-import Text.Parsec hiding (string, token)
-import qualified Text.Parsec as Parsec
+import Text.Parsec
 
 -- | Represents arbitrary JSON data.
 data Value = Null
@@ -31,11 +31,11 @@ encode (Array   a) = "[" ++ intercalate "," (encode <$> a) ++ "]"
 encode (Object  o) = "{" ++ intercalate "," (f <$> toList o) ++ "}"
   where f (n, v) = encode (String n) ++ ":" ++ encode v
 
-escape c = maybe control (\e -> '\\' : [e]) (c `lookup` exceptions) where
+escape c = maybe control (\e -> '\\' : [e]) (c `lookup` escapes) where
   control = if isControl c then (encode . showHex . fromEnum) c else [c]
   encode hex = "\\u" ++ replicate (4 - length s) '0' ++ s where s = hex ""
-  exceptions = [('\b', 'b'), ('\f', 'f'), ('\n', 'n'), ('\r', 'r'),
-                ('\t', 't'), ('\\', '\\'), ('"', '"')]
+escapes = [('\b', 'b'), ('\f', 'f'), ('\n', 'n'), ('\r', 'r'),
+           ('\t', 't'), ('\\', '\\'), ('"', '"')]
 
 -- | Decodes a 'Value' from a 'String'.
 decode :: String -> Value
@@ -44,37 +44,35 @@ decode = attempt . parse input "JSON"
           attempt (Right (_, trail)) = error $ "trailing " ++ show trail
           attempt (Left failure) = error $ "invalid " ++ show failure
 
-input = (whitespace >> value) & getInput where
-  value = null <|> boolean <|> number <|> string <|> array <|> object
+input = value & getInput where
+  value = lexical $ null <|> boolean <|> number <|> string' <|> array <|> object
 
-  null    = Null    <$  keyword "null"
-  boolean = Boolean <$> (True <$ keyword "true" <|> False <$ keyword "false")
-  number  = Number  <$> rational <$> lexical (integer & fraction & exponent)
-  string  = String  <$> many character `within` (char,  '"', '"')
-  array   = Array   <$> commaSep value `within` (token, '[', ']')
-  object  = Object  <$> fromList <$> commaSep pair `within` (token, '{', '}')
+  null    = Null    <$  string "null"
+  boolean = Boolean <$> (True <$ string "true" <|> False <$ string "false")
+  number  = Number  <$> rational <$> (integer & fraction & exponent)
+  string' = String  <$> between (char '"') (char '"') (many character)
+  array   = Array   <$> between (char '[') (char ']') (listOf value)
+  object  = Object  <$> between (char '{') (char '}') (fromList <$> listOf pair)
 
-  pair = name & (token ':' >> value) where name = (\(String s) -> s) <$> string
-  character = escape <|> satisfy (not . \c -> isControl c || elem c "\"\\")
-    where escape  = char '\\' >> (oneOf "\"\\/bfnrt" <|> unicode)
-          unicode = char 'u' >> ordinal <$> count 4 hexDigit
+  pair = lexical name & (lexical (char ':') >> value)
+    where name = (\(String s) -> s) <$> string'
+  character = escaped <|> satisfy (not . \c -> isControl c || elem c "\"\\")
+    where escaped  = char '\\' >> (unescape <$> oneOf "\"\\/bfnrt" <|> unicode)
+          unicode  = char 'u' >> ordinal <$> count 4 hexDigit
+          unescape x = fst . fromJust $ find ((== x) . snd) escapes
 
   integer  = option '+' (char '-') & (0 <$ char '0' <|> natural)
   fraction = option 0 (char '.' >> fractional <$> many1 digit)
   exponent = option 0 (oneOf "eE" >> natural `maybeSignedWith` (plus <|> minus))
-    where (plus, minus) = ((+) <$ char '+', (-) <$ char '-')
+    where number `maybeSignedWith` sign = ($ 0) <$> option (+) sign <*> number
+          (plus, minus) = ((+) <$ char '+', (-) <$ char '-')
 
-  items `within` (term, start, end) = term start *> items <* term end
-  number `maybeSignedWith` sign = ($ 0) <$> option (+) sign <*> number
-  (token, keyword) = (lexical . Parsec.char, lexical . Parsec.string)
-
-  a & b      = (,) <$> a <*> b
-  commaSep   = (`sepBy` token ',')
-  whitespace = many (oneOf " \t\r\n")
-  lexical    = (<* whitespace)
-  integral   = fst . head . readDec
-  ordinal    = toEnum . fst . head . readHex
-  natural    = integral <$> many1 digit
+  a & b    = (,) <$> a <*> b
+  listOf   = (`sepBy` char ',')
+  lexical  = between ws ws where ws = many (oneOf " \t\r\n")
+  integral = fst . head . readDec
+  ordinal  = toEnum . fst . head . readHex
+  natural  = integral <$> many1 digit
   fractional digits = integral digits % (10 ^ length digits)
   rational ((('+', int), frac), exp) = (fromInteger int + frac) * 10 ^^ exp
   rational ((('-', int), frac), exp) = -(fromInteger int + frac) * 10 ^^ exp
