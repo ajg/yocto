@@ -12,4 +12,4 @@ install:
   - export PATH=$HOME/.cabal/bin:$PATH
 
 before_script:
-  - hlint .
+  - hlint . -i 'Too strict if'
