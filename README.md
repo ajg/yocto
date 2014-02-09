@@ -9,7 +9,7 @@ A Minimal JSON Parser & Printer for Haskell, written by [Alvaro J. Genial](http:
 Synopsis
 --------
 
-Yocto is exceedingly simple: it only exports one type, `Value` (which can represent any JSON-encoded data) in addition to `Read` and `Show` instances for it (which, respectively, take care of decoding and encoding values automatically.)
+Yocto is exceedingly simple: it only exports one type, `Value` (which can represent any JSON-encoded data), together with a pair of functions `decode` & `encode`, which handle parsing `Value`s from and printing them to `String`s, respectively.
 
 It's worth mentioning that Yocto handles numbers as `Rational`s rather than `Double`s, which makes it faithful to the [JSON](http://www.json.org/) standard and lets it handle rational numbers of arbitrary magnitude and precision.
 
@@ -28,7 +28,7 @@ Yocto is not intended to be the most efficient or feature-rich JSON library; rat
 Status
 ------
 
-The library is feature complete, though there's some [work to do](#future-work). The current version is `0.1.2`.
+The library is feature complete, though there's some [work to do](#future-work).
 
 Usage
 -----
@@ -45,9 +45,9 @@ data Value = Null
   deriving (Eq, Ord)
 ```
 
-...and can be `read` and `show`n as JSON, or constructed programmatically.
+...and can be `decode`d and `encode`d as JSON, or constructed programmatically.
 
-Encoding and decoding are intended to be lossless functions, such that `read . show == id`; however, note that certain `Rational` values, like 1/3, cannot be losslessly represented as JSON because they have infinitely repeating decimals.
+Encoding and decoding are intended to be lossless functions, such that `decode . encode == id`; however, note that certain `Rational` values, like 1/3, cannot be losslessly represented as JSON because they have infinitely repeating decimals.
 
 Examples
 --------
@@ -67,13 +67,13 @@ $ ghci
 ...and print them:
 
 ```haskell
-> boolean
+> encode boolean
 true
-> string
+> encode string
 "Hapax Legomenon"
-> array
+> encode array
 [1,2,3]
-> object
+> encode object
 {"Bar":"Hapax Legomenon","Foo":true,"Qux":[1,2,3]}
 ```
 
@@ -83,7 +83,7 @@ Here's a trivial program that parses JSON from standard input, adds 1 to every n
 module Main (main) where
 import Text.JSON.Yocto
 
-main = putStr . show . increment . read =<< getContents where
+main = putStr . encode . increment . decode =<< getContents where
   increment :: Value -> Value
   increment (Number n) = Number $ n + 1
   increment (Array  a) = Array  $ fmap increment a
@@ -100,8 +100,6 @@ Future Work
 -----------
 
  - An instance of `Functor`, `Applicative` or `Monad` to facilitate mapping.
- - Ensure the library works with compilers besides GHC.
- - Independent `encode` and `decode` functions (maybe.)
  - A test suite.
 
 (Feel free to send a pull request for any of these.)

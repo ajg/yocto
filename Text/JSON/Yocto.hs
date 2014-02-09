@@ -1,5 +1,6 @@
 -- Copyright 2014 Alvaro J. Genial [http://alva.ro]; see LICENSE file for more.
-module Text.JSON.Yocto (Value (..)) where
+
+module Text.JSON.Yocto (decode, encode, Value (..)) where
 
 import Control.Applicative hiding ((<|>), many)
 import Data.Char (isControl)
@@ -17,17 +18,17 @@ data Value = Null
            | String  String
            | Array   [Value]
            | Object  (Map String Value)
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Read, Show)
 
-instance Show Value where
-  show  Null       = "null"
-  show (Boolean b) = if b then "true" else "false"
-  show (Number  n) = if rem == 0 then show i else show $ fromRat n
-    where (i, rem) = numerator n `divMod` denominator n
-  show (String  s) = "\"" ++ concat (escape <$> s) ++ "\""
-  show (Array   a) = "[" ++ intercalate "," (show <$> a) ++ "]"
-  show (Object  o) = "{" ++ intercalate "," (f <$> toList o) ++ "}"
-    where f (n, v) = show n ++ ":" ++ show v
+encode :: Value -> String
+encode  Null       = "null"
+encode (Boolean b) = if b then "true" else "false"
+encode (Number  n) = if rem == 0 then show i else show $ fromRat n
+  where (i, rem) = numerator n `divMod` denominator n
+encode (String  s) = "\"" ++ concat (escape <$> s) ++ "\""
+encode (Array   a) = "[" ++ intercalate "," (encode <$> a) ++ "]"
+encode (Object  o) = "{" ++ intercalate "," (f <$> toList o) ++ "}"
+  where f (n, v) = encode (String n) ++ ":" ++ encode v
 
 escape c = maybe control (\e -> '\\' : [e]) (c `lookup` exceptions) where
   control = if isControl c then (encode . showHex . fromEnum) c else [c]
@@ -35,10 +36,10 @@ escape c = maybe control (\e -> '\\' : [e]) (c `lookup` exceptions) where
   exceptions = [('\b', 'b'), ('\f', 'f'), ('\n', 'n'), ('\r', 'r'),
                 ('\t', 't'), ('\\', '\\'), ('"', '"')]
 
-instance Read Value where
-  readsPrec _ string = attempt $ parse input "JSON" string
+decode :: String -> Value
+decode = attempt . parse input "JSON"
     where attempt (Left failure) = error $ "invalid " ++ show failure
-          attempt (Right success) = [success]
+          attempt (Right success) = fst success
 
 input = (whitespace >> value) & getInput where
   value = null <|> boolean <|> number <|> string <|> array <|> object
