@@ -19,7 +19,8 @@ Test-suite tests
   Hs-Source-Dirs:       .
   Main-Is:              Test.hs
   Type:                 exitcode-stdio-1.0
-  Build-Depends:        base, containers, parsec, yocto, QuickCheck, quickcheck-instances
+  Build-Depends:        base, containers, parsec, yocto, QuickCheck,
+                        quickcheck-instances
 
 source-repository head
   type:                git
