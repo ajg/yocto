@@ -42,7 +42,7 @@ data Value = Null
            | String  String
            | Array   [Value]
            | Object  (Map String Value)
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Read, Show)
 ```
 
 ...and can be `decode`d and `encode`d as JSON, or constructed programmatically.
