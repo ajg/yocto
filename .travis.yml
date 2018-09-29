@@ -1,15 +1,19 @@
-## Copyright 2014 Alvaro J. Genial (http://alva.ro) -- see LICENSE.md for more.
+## Copyright 2018 Alvaro J. Genial (http://alva.ro) -- see LICENSE.md for more.
 
 language: haskell
 
 ghc:
+  - 7.0
+  - 7.2
   - 7.4
   - 7.6
+  - 7.8
+  - 7.10
+  - 8.0
+  - 8.2
+  - 8.4
+  - 8.6
+  - HEAD
 
 install:
   - cabal install --only-dependencies --enable-tests
-  - cabal install hlint
-  - export PATH=$HOME/.cabal/bin:$PATH
-
-before_script:
-  - hlint . -i 'Too strict if'
