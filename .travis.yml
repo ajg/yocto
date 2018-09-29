@@ -8,12 +8,11 @@ ghc:
   - 7.4
   - 7.6
   - 7.8
-  - 7.10
+  - "7.10"
   - 8.0
   - 8.2
   - 8.4
   - 8.6
-  - HEAD
 
 install:
   - cabal install --only-dependencies --enable-tests
